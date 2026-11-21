@@ -283,6 +283,231 @@ public:
         printTable(historyHead, "APPOINTMENT HISTORY (COMPLETED / CANCELLED)", "Total History Records: ", historyCount);
     }
 };
+class Patient {
+public:
+    int id;
+    string name;
+    int age;
+    string gender;
+    string contact;
+    string disease;
+    Patient()
+    {
+        int id = 0;
+        int age = 0;
+    }
+    Patient(int id, string name, int age, string gender, string contact, string disease)
+    {
+        this->id = id;
+        this->name = name;
+        this->age = age;
+        this->gender = gender;
+        this->contact = contact;
+        this->disease = disease;
+    }
+    void display()
+    {
+        cout << "ID=" << id << "|Name=" << name << "|Age=" << age << "|Gender="
+            << gender << "|Contact=" << contact << "|Disease" << disease;
+    }
+};
+class PatientNode
+{
+public:
+    Patient data;
+    PatientNode* next;
+    PatientNode(Patient p)
+    {
+        data = p;
+        next = nullptr;
+    }
+    string tolowercase(string s)
+    {
+        for (int i = 0; i < s.length(); i++)
+        {
+            s[i] = tolower(s[i]);
+        }
+        return s;
+    }
+};
+class PatientList
+{
+public:
+    PatientNode* head;
+    PatientList()
+    {
+        head = nullptr;
+    }
+    string toLower(string s) {
+        for (int i = 0; i < s.length(); i++) {
+            s[i] = tolower(s[i]);
+        }
+        return s;
+    }
+    PatientNode* searchbyid(int id)
+    {
+        if (head == nullptr)
+        {
+            cout << "Empty list";
+            return nullptr;
+        }
+        PatientNode* temp = head;
+        while (temp != nullptr)
+        {
+            if (temp->data.id == id)
+            {
+                return temp;
+            }
+            temp = temp->next;
+        }
+        return nullptr;
+    }
+    bool registerPatient(Patient p)
+    {
+        if (searchbyid(p.id) != nullptr)
+        {
+            cout << "Duplicate id";
+            return false;
+        }
+        PatientNode* newNode = new PatientNode(p);
+        if (head == nullptr)
+        {
+            head = newNode;
+            return true;
+        }
+        else
+        {
+            PatientNode* temp = head;
+            while (temp->next != nullptr)
+            {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
+        sortbyId();
+        return true;
+    }
+    PatientList searchByName(string name) {
+        PatientList result;
+        PatientNode* temp = head;
+        while (temp != nullptr) {
+            if (toLower(temp->data.name) == toLower(name)) {
+                result.registerPatient(temp->data);
+            }
+            temp = temp->next;
+        }
+        return result;
+    }
+    void sortbyId()
+    {
+        PatientNode* sorted = nullptr;
+        PatientNode* temp = head;
+        while (temp != nullptr)
+        {
+            PatientNode* nextnode = temp->next;
+            if (sorted == nullptr || temp->data.id < sorted->data.id)
+            {
+                temp->next = sorted;
+                sorted = temp;
+            }
+            else
+            {
+                PatientNode* temp2 = sorted;
+                while (temp2->next != nullptr && temp2->next->data.id < temp->data.id)
+                {
+                    temp2 = temp2->next;
+                }
+                temp->next = temp2->next;
+                temp2->next = temp;
+            }
+            temp = nextnode;
+
+        }
+        head = sorted;
+    }
+    void sortbyName()
+    {
+        PatientNode* sorted = nullptr;
+        PatientNode* temp = head;
+        while (temp != nullptr)
+        {
+            PatientNode* nextnode = temp->next;
+            if (sorted == nullptr || toLower(temp->data.name) < toLower(sorted->data.name))
+            {
+                temp->next = sorted;
+                sorted = temp;
+            }
+            else
+            {
+                PatientNode* temp2 = sorted;
+                while (temp2->next != nullptr && toLower(temp2->next->data.name) < toLower(temp->data.name))
+                {
+                    temp2 = temp2->next;
+                }
+                temp->next = temp2->next;
+                temp2->next = temp;
+            }
+            temp = nextnode;
+
+        }
+        head = sorted;
+    }
+    bool deletePatient(int id)
+    {
+        if (head == nullptr)
+        {
+            cout << "Empty list";
+            return false;
+        }
+        if (head->data.id == id)
+        {
+            PatientNode* temp = head;
+            head = temp->next;
+            delete temp;
+            return true;
+        }
+        PatientNode* temp = head;
+        while (temp->next != nullptr && temp->next->data.id != id)
+        {
+            temp = temp->next;
+        }
+        if (temp->next == nullptr)
+        {
+            cout << "Id does not exist";
+            return false;
+        }
+        PatientNode* temp2 = cur->next;
+        temp->next = temp2->next;
+        delete temp;
+        return true;
+    }
+    bool updatePatient(int id, string name, int age, string gender, string contact, string disease) {
+        PatientNode* node = searchById(id);
+        if (node == NULL) {
+            return false;
+        }
+        node->data.name = name;
+        node->data.age = age;
+        node->data.gender = gender;
+        node->data.contact = contact;
+        node->data.disease = disease;
+        return true;
+    }
+    void display()
+    {
+        if (head == nullptr)
+        {
+            cout << "No records found" << endl;
+            return;
+        }
+        PatientNode* temp = head;
+        while (cur != nullptr) {
+            temp->data.display();
+            temp = temp->next;
+        }
+    }
+};
+
 
 // ---------------- Safe integer input ----------------
 int readInt(const string& prompt) {
