@@ -339,19 +339,20 @@ public:
     }
 
     // 1. Verify registered patient (Linear Search)
-    bool verifyRegisteredPatient(int patientID) const 
+   bool verifyRegisteredPatient(int patientID, const int registeredIDs[], int totalPatients) const
     {
-        
-            if (registeredIDs[i] == patientID) 
+        for (int i = 0; i < totalPatients; i++)
+        {
+            if (registeredIDs[i] == patientID)
             {
                 return true;
             }
         }
-        return false;
+        return false;   // only after the whole loop has finished
     }
 
   bool validateDate(int day, int month, int year) const
-    {
+   {
         if (year < 2024 || year > 2100 || month < 1 || month > 12) return false;
 
         int daysInMonth[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -398,12 +399,20 @@ public:
     }
 
    // 4. Book appointment
-    bool bookAppointment(int patientID, const string& patientName,
-                         const string& doctorName,
+   bool bookAppointment(int patientID, const string& doctorName,
                          int day, int month, int year, int hour, int minute,
-                         const int registeredIDs[], int totalPatients) {
-        if (!verifyRegisteredPatient(patientID, registeredIDs, totalPatients)) {
+                         PatientList& patients)
+    {
+        PatientNode* found = patients.searchbyid(patientID);
+        if (found == nullptr)
+        {
             cout << "[Error] Patient ID " << patientID << " is not registered.\n";
+            return false;
+        }
+        string patientName = found->data.name;
+
+        if (!validateDate(day, month, year)) {
+            cout << "[Error] Invalid date.\n";
             return false;
         }
         if (!validateDate(day, month, year)) {
