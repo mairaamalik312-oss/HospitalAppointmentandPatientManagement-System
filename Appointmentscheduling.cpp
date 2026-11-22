@@ -201,9 +201,9 @@ public:
             cout << "Id does not exist";
             return false;
         }
-        PatientNode* temp2 = temp2->next;
+        PatientNode* temp2 = temp->next;
         temp->next = temp2->next;
-        delete temp;
+        delete temp2;
         return true;
     }
     bool updatePatient(int id, string name, int age, string gender, string contact, string disease) {
@@ -339,16 +339,15 @@ public:
     }
 
     // 1. Verify registered patient (Linear Search)
-   bool verifyRegisteredPatient(int patientID, const int registeredIDs[], int totalPatients) const
+    bool verifyRegisteredPatient(int patientID, PatientList& patients)
     {
-        for (int i = 0; i < totalPatients; i++)
+
+        if (patients.searchbyid(patientID) != nullptr)
         {
-            if (registeredIDs[i] == patientID)
-            {
-                return true;
-            }
+            return true;
         }
-        return false;   // only after the whole loop has finished
+        return false;
+
     }
 
   bool validateDate(int day, int month, int year) const
@@ -404,7 +403,7 @@ public:
                          PatientList& patients)
     {
         PatientNode* found = patients.searchbyid(patientID);
-        if (found == nullptr)
+        if (!verifyRegisteredPatient(patientID, patients))
         {
             cout << "[Error] Patient ID " << patientID << " is not registered.\n";
             return false;
@@ -513,6 +512,22 @@ public:
         }
         printTable(historyHead, "APPOINTMENT HISTORY (COMPLETED / CANCELLED)", "Total History Records: ", historyCount);
     }
+    // 9. to block patient deletion if appointment on that id exists
+    bool pendingappointmentexists(int patientID) const
+    {
+        Appointment* temp = front;
+        while (temp != nullptr)
+        {
+            
+            if (temp->patientID == patientID)
+            {
+                return true;
+            }
+            temp = temp->next;
+        }
+        return false;
+    }
+
 };
 
 
